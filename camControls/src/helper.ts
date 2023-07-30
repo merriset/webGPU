@@ -1,5 +1,19 @@
 import { vec3, mat4} from 'gl-matrix';
 
+export const CreateAnimation = (draw:any, rotation:vec3 = vec3.fromValues(0,0,0), isAnimation = true ) => {
+    function step() {
+        if(isAnimation){
+            rotation[0] += 0.01;
+            rotation[1] += 0.01;
+            rotation[2] += 0.01;
+        } else{
+            rotation = [0, 0, 0];
+        }
+        draw();
+        requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
 
 
 export const CreateTransforms = (modelMat:mat4, translation:vec3 = [0,0,0], rotation:vec3 = [0,0,0], scaling:vec3 = [1,1,1]) => {
