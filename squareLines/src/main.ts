@@ -68,7 +68,7 @@ const CreateSquare = async () => {
             ]
         },
         primitive:{
-            topology: "line-strip",
+            topology: "point-list",
         }
     });
 
