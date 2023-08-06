@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "ES6",
+    "lib": [
+      "es2017",
+      "DOM"
+    ],
+    "types": [
+      "node",
+      "@webgpu/types"
+    ],
+    "module": "es2015",
+    "esModuleInterop": true,
+    "strict": true,
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
