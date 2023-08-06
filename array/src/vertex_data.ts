@@ -1,14 +1,14 @@
 export const CubeData1 = () => {
     const vertexData = new Float32Array([
         // position,   color
-        -0.1, -0.1,  0.1,    0, 0, 1,     // vertex a, index 0
-         0.1, -0.1,  0.1,    1, 0, 1,     // vertex b, index 1
-         0.1,  0.1,  0.1,    1, 1, 1,     // vertex c, index 2
-        -0.1,  0.1,  0.1,    0, 1, 1,     // vertex d, index 3
-        -0.1, -0.1, -0.1,    0, 0, 0,     // vertex e, index 4
-         0.1, -0.1, -0.1,    1, 0, 0,     // vertex f, index 5
-         0.1,  0.1, -0.1,    1, 1, 0,     // vertex g, index 6
-        -0.1,  0.1, -0.1,    0, 1, 0,     // vertex h, index 7 
+        -0.5, -0.5,  0.5,    0, 0, 1,     // vertex a, index 0
+         0.5, -0.5,  0.5,    1, 0, 1,     // vertex b, index 1
+         0.5,  0.5,  0.5,    1, 1, 1,     // vertex c, index 2
+        -0.5,  0.5,  0.5,    0, 1, 1,     // vertex d, index 3
+        -0.5, -0.5, -0.5,    0, 0, 0,     // vertex e, index 4
+         0.5, -0.5, -0.5,    1, 0, 0,     // vertex f, index 5
+         0.5,  0.5, -0.5,    1, 1, 0,     // vertex g, index 6
+        -0.5,  0.5, -0.5,    0, 1, 0,     // vertex h, index 7 
     ]);
 
     const indexData = new Uint32Array([

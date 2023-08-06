@@ -3,8 +3,10 @@ import shader from './shader.wgsl';
 import { CubeData1 } from './vertex_data';
 import { vec3, mat4 } from 'gl-matrix';
 import "./site.css";
+var createCamera = require('3d-view-controls')
+var perspective = require('gl-mat4/perspective')
 
-const Create3DObject = async (isAnimation = true) => {
+const Create3DObject = async (isAnimation = false) => {
     const gpu = await InitGPU();
     const device = gpu.device;
 
@@ -61,9 +63,9 @@ const Create3DObject = async (isAnimation = true) => {
     });
 
     // create uniform data
-    const nx = 10;
-    const ny = 10;
-    const nz = 10;
+    const nx = 16;
+    const ny = 16;
+    const nz = 4;
     const ni = nx * ny * nz;  // number of instances
 
     const matrixSize = 4 * 16;
