@@ -1,6 +1,6 @@
 // vertex shader
 struct Uniforms {
-    mvpMatrix : array<mat4x4<f32>,30>,
+    mvpMatrix : array<mat4x4<f32>,1000>,
 };
 @binding(0) @group(0) var<uniform> uniforms : Uniforms;
 

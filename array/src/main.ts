@@ -61,9 +61,10 @@ const Create3DObject = async (isAnimation = true) => {
     });
 
     // create uniform data
-    const nx = 6;
-    const ny = 5;
-    const ni = nx * ny;  // number of instances
+    const nx = 10;
+    const ny = 10;
+    const nz = 10;
+    const ni = nx * ny * nz;  // number of instances
 
     const matrixSize = 4 * 16;
     const uniformBufferSize = ni * matrixSize;
@@ -94,22 +95,24 @@ const Create3DObject = async (isAnimation = true) => {
     let i = 0;
     for(let x = 0; x < nx; x++){
         for(let y = 0; y < ny; y++){
-            modelMat[i] = mat4.create();
-            mat4.translate(
-                modelMat[i], 
-                modelMat[i], 
-                vec3.fromValues(
-                    4*(x - nx/2 + 0.5), 
-                    4*(y - ny/2 + 0.5), 
-                    0
-                )
-            );
-            i++;
+            for(let z = 0; z < nz; z++){
+                modelMat[i] = mat4.create();
+                mat4.translate(
+                    modelMat[i], 
+                    modelMat[i], 
+                    vec3.fromValues(
+                        4*(x - nx/2 + 0.5), 
+                        4*(y - ny/2 + 0.5), 
+                        4*(z - nz/2 + 0.5)
+                    )
+                );
+                i++;
+            }
         }
     }
 
     const viewMatrix = mat4.create();
-    mat4.translate(viewMatrix, viewMatrix, vec3.fromValues(0, 0, -16));
+    mat4.translate(viewMatrix, viewMatrix, vec3.fromValues(0, 0, -50));
     const tmpMat = mat4.create();
 
     let textureView = gpu.context.getCurrentTexture().createView();
@@ -140,22 +143,24 @@ const Create3DObject = async (isAnimation = true) => {
         let m = 0, i = 0;
         for(let x = 0; x < nx; x++){
             for(let y = 0; y < ny; y++){
-                mat4.rotate(
-                    tmpMat,
-                    modelMat[i],
-                    1,
-                    vec3.fromValues(
-                        Math.sin((x+0.5)*2*rotation[0]), 
-                        Math.cos((y+0.5)*2*rotation[1]), 
-                        Math.sin(2*rotation[2])*Math.cos(2*rotation[2])
-                    )
-                );
-                mat4.multiply(tmpMat, viewMatrix, tmpMat);
-                mat4.multiply(tmpMat, vp.projectionMatrix, tmpMat);
+                for(let z = 0; z < nz; z++){
+                    mat4.rotate(
+                        tmpMat,
+                        modelMat[i],
+                        1,
+                        vec3.fromValues(
+                            Math.sin((x+0.5)*2*rotation[0]), 
+                            Math.cos((y+0.5)*2*rotation[1]), 
+                            Math.sin(2*rotation[2])*Math.cos(2*rotation[2])
+                        )
+                    );
+                    mat4.multiply(tmpMat, viewMatrix, tmpMat);
+                    mat4.multiply(tmpMat, vp.projectionMatrix, tmpMat);
 
-                mvpMatricesData.set(tmpMat, m);
-                i++;
-                m += 16;
+                    mvpMatricesData.set(tmpMat, m);
+                    i++;
+                    m += 16;
+                }
             }
         }
 
