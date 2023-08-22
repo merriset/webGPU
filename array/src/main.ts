@@ -1,30 +1,41 @@
-import { InitGPU, CreateGPUBuffer, CreateGPUBufferUint, CreateViewProjection, CreateAnimation } from './helper';
+import { InitGPU, CreateGPUBufferUint, CreateViewProjection, CreateAnimation } from './helper';
 import shader from './shader.wgsl';
-import { CubeData1 } from './vertex_data';
+import { CubeData } from './vertex_data';
 import { vec3, mat4 } from 'gl-matrix';
-import "./site.css";
 
 //TODO: implement camera controls
 var createCamera = require('3d-view-controls')
 var perspective = require('gl-mat4/perspective')
 
 const Create3DObject = async (isAnimation = false) => {
-    
+
+    //initialize canvas and get logical device
     const gpu = await InitGPU();
     const device = gpu.device;
 
-    // create vertex buffers
-    const cubeData = CubeData1();
+    //get vertex data from vertex_data
+    const cubeData = CubeData();
     const numberOfVertices = cubeData.indexData.length;
-    const vertexBuffer = CreateGPUBuffer(device, cubeData.vertexData);
+    // const vertexBuffer = CreateGPUBuffer(device, cubeData.vertexData);
+    const vertexBuffer = device.createBuffer({
+        size: cubeData.vertexData.byteLength,
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        mappedAtCreation: true
+    });
+    //TODO: investigate these two lines
+    new Float32Array(vertexBuffer.getMappedRange()).set(cubeData.vertexData);
+    vertexBuffer.unmap();
+
     const indexBuffer = CreateGPUBufferUint(device, cubeData.indexData);
+
+    //create shader module from shader code
+    const shaderModule = device.createShaderModule({ code: shader });
  
+    //create render pipeline
     const pipeline = device.createRenderPipeline({
         layout:'auto',
         vertex: {
-            module: device.createShaderModule({                    
-                code: shader
-            }),
+            module: shaderModule,
             entryPoint: "vs_main",
             buffers:[
                 {
@@ -138,9 +149,6 @@ const Create3DObject = async (isAnimation = false) => {
             depthClearValue: 1.0,
             depthLoadOp: 'clear',
             depthStoreOp: "store",
-            /*stencilClearValue: 0,
-            stencilLoadOp: 'clear',
-            stencilStoreOp: "store"*/
         }
     };
     
@@ -169,6 +177,7 @@ const Create3DObject = async (isAnimation = false) => {
             }
         }
 
+        //send uniform buffer to the GPU buffer
         device.queue.writeBuffer(
             uniformBuffer,
             0,

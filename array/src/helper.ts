@@ -2,49 +2,39 @@ import { vec2, vec3, mat4 } from 'gl-matrix';
 
 
 export const InitGPU = async () => {
-    const checkgpu = CheckWebGPU();
-    if(checkgpu.includes('Your current browser does not support WebGPU!')){
-        console.log(checkgpu);
-        throw('Your current browser does not support WebGPU!');
+    
+    //if this browser does not support webGPU
+    if(!navigator.gpu) {
+        throw('This browser does not support WebGPU');
     }
+    
+    //get canvas from index.html
     const canvas = document.getElementById('canvas-webgpu') as HTMLCanvasElement;
-    const adapter = await navigator.gpu?.requestAdapter();
-    const device = await adapter?.requestDevice() as GPUDevice;
-    const context = canvas.getContext('webgpu') as GPUCanvasContext;
-    const format = navigator.gpu.getPreferredCanvasFormat();
-    context.configure({
-        device: device,
-        format: format,
-        //size: size
-        alphaMode:'opaque'
-    });
-    return{ device, canvas, format, context };
-};
-
-export const CheckWebGPU = () => {
-    let result = 'Great, your current browser supports WebGPU!';
-    if (!navigator.gpu) {
-        result = `Your current browser does not support WebGPU! Make sure you are on a system 
-                    with WebGPU enabled. Currently, SPIR-WebGPU is only supported in  
-                    <a href="https://www.google.com/chrome/canary/">Chrome canary</a>
-                    with the flag "enable-unsafe-webgpu" enabled. See the 
-                    <a href="https://github.com/gpuweb/gpuweb/wiki/Implementation-Status"> 
-                    Implementation Status</a> page for more details.                   
-                `;
-    } 
-
-    const canvas = document.getElementById('canvas-webgpu') as HTMLCanvasElement;
-    const div = document.getElementsByClassName('item2')[0] as HTMLDivElement;
+    const div = document.getElementById('canvas-block-div') as HTMLDivElement;
     canvas.width  = div.offsetWidth;
     canvas.height = div.offsetHeight;
-
+    //make canvas div resizable
     function windowResize() {
         canvas.width  = div.offsetWidth;
         canvas.height = div.offsetHeight;
     };
     window.addEventListener('resize', windowResize);
-    
-    return result;
+
+    //request a default adapter
+    const adapter = await navigator.gpu?.requestAdapter();
+    //request logical device from adapter
+    const device = await adapter?.requestDevice() as GPUDevice;
+    //set the canvas context to webGPU application settings
+    const context = canvas.getContext('webgpu') as GPUCanvasContext;
+    //get system specific canvas specifications
+    const format = navigator.gpu.getPreferredCanvasFormat();
+    //configure the canvas context settings
+    context.configure({
+        device: device,
+        format: format,
+        alphaMode:'premultiplied'
+    });
+    return{ device, canvas, format, context };
 };
 
 export const CreateAnimation = (draw:any, rotation:vec3 = vec3.fromValues(0,0,0), isAnimation = true ) => {
@@ -118,18 +108,6 @@ export const CreateGPUBufferUint = (device:GPUDevice, data:Uint32Array,
         mappedAtCreation: true
     });
     new Uint32Array(buffer.getMappedRange()).set(data);
-    buffer.unmap();
-    return buffer;
-};
-
-export const CreateGPUBuffer = (device:GPUDevice, data:Float32Array, 
-    usageFlag:GPUBufferUsageFlags = GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST) => {
-    const buffer = device.createBuffer({
-        size: data.byteLength,
-        usage: usageFlag,
-        mappedAtCreation: true
-    });
-    new Float32Array(buffer.getMappedRange()).set(data);
     buffer.unmap();
     return buffer;
 };
